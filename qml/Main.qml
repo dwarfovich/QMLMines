@@ -4,8 +4,6 @@ import "boards" as Boards
 
 GameWindow {
     id: gameWindow
-    //screenWidth: 480
-    //screenHeight: 320
 
     state: "mainMenu"
 
