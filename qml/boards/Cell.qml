@@ -21,7 +21,7 @@ Item {
             id: neighborsMinesLabel
             anchors.centerIn: parent
             text: ""
-            font.pixelSize: 28
+            font.pixelSize: 14 + (cell.width - 20) * 0.35
         }
     }
 

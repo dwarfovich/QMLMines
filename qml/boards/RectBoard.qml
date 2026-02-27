@@ -37,10 +37,60 @@ Item{
         }
 
         console.error("CellId clicked: " + cellIndex)
-        if (!cells[cellIndex].revealed){
-            cells[cellIndex].revealed = true
-            if(cells[cellIndex].neighborMines() === -1){
-                cells[cellIndex].setNeighborMines(neighborsMinesCount(cellIndex))
+        revealCell(cellIndex)
+    }
+
+    // function openCell(index){
+    //     if (index >= 0 && index < cells.length) {
+    //         cells[cellIndex].revealed = true
+    //     }
+    // }
+
+    function revealCell(index){
+        if (index < 0 && index >= cells.length) {
+            return
+        }
+
+        if (cells[index].revealed){
+            return
+        }
+
+        cells[index].revealed = true
+        if (cells[index].hasMine || cells[index].hasFlag){
+            return
+        }
+
+        if (cells[index].neighborMines() === -1){
+            let neighborMines = neighborsMinesCount(index)
+            cells[index].setNeighborMines(neighborMines)
+            if (neighborMines === 0) {
+                let row = Math.floor(index / cols)
+                let col = index % cols
+                if(row + 1 < rows){
+                    revealCell(coordinatesToIndex(row + 1, col))
+                }
+                if(row - 1 >= 0){
+                    revealCell(coordinatesToIndex(row - 1, col))
+                }
+                if(col + 1 < cols){
+                revealCell(coordinatesToIndex(row, col + 1))
+                }
+                if(col - 1 >= 0){
+                    revealCell(coordinatesToIndex(row, col - 1))
+                }
+                if(row + 1 < rows && col + 1 < cols){
+                    revealCell(coordinatesToIndex(row + 1, col + 1))
+                }
+                if(row - 1 >= 0 && col + 1 < cols){
+                    revealCell(coordinatesToIndex(row - 1, col + 1))
+                }
+                if(row + 1 < rows && col - 1 >= 0){
+                    revealCell(coordinatesToIndex(row + 1, col - 1))
+                }
+                if(row - 1 >= 0 && col - 1 >= 0){
+                    revealCell(coordinatesToIndex(row - 1, col - 1))
+                }
+
             }
         }
     }
