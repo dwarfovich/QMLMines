@@ -5,17 +5,22 @@ Item{
     id: rectBoard
 
     readonly property string name: "Rectangle"
-    property int cols: 5
+    property var cells: []
+    property int mines: 6
     property int rows: 5
-    // property var cells: []
-
+    property int cols: 5
     property real rawCellWidth: width / cols
     property real rawCellHeight: height / rows
     readonly property real maxCellSize: 60
     readonly property real minCellSize: 20
     property real cellSize: Math.max(minCellSize, Math.min(maxCellSize, Math.min(rawCellWidth, rawCellHeight)))
-    property real fieldStartX: (width - cellSize*cols)/2
-    // anchors.fill: parent
+    property real fieldStartX: (width - cellSize*cols) / 2
+
+    Component {
+        id: cellComponent
+        Cell {}
+    }
+
     Rectangle {
         id: rect
         color: "transparent"
@@ -25,62 +30,68 @@ Item{
         anchors.fill: parent
     }
 
-    property var cellsArray: []
-    Component {
-        id: cellComponent
-        Cell {}
+    function cellClicked(cellIndex, button){
+        if (cellIndex < 0 || cellIndex >= cells.length){
+            console.error("Incorret cellId clicked: " + cellIndex)
+            return
+        }
+
+        console.error("CellId clicked: " + cellIndex)
+        if (!cells[cellIndex].revealed){
+            cells[cellIndex].revealed = true
+            if(cells[cellIndex].neighborMines() === -1){
+                cells[cellIndex].setNeighborMines(neighborsMinesCount(cellIndex))
+            }
+        }
+    }
+
+    function shuffle(array) {
+        for (let i = array.length - 1; i >= 1; --i) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
     }
 
     function createBoard(rows, cols) {
-        let index = 0
-        for (let r = 0; r < rows; r++) {
-            for (let c = 0; c < cols; c++) {
-                let cell = cellComponent.createObject(rectBoard, {
-                                                          cellId: index,
-                                                          width: Qt.binding(() => rectBoard.cellSize),
-                                                                              height: Qt.binding(() => rectBoard.cellSize),
+        cells.filter(cell => cell).forEach(cell => cell.destroy())
 
-                                                                              x: Qt.binding(() => fieldStartX + c * rectBoard.cellSize),
-                                                                              y: Qt.binding(() => r * rectBoard.cellSize)
+        cells = Array.from({ length: rows * cols}, () => cellComponent.createObject(rectBoard));
+        cells.slice(0, mines).forEach(cell => cell.hasMine = true);
+        shuffle(cells)
+        cells.forEach((cell, i) => {
+                          cell.index = i
+                          let row = Math.floor(i / cols)
+                          let col = i % cols
+                          cell.x = Qt.binding(() => fieldStartX + col * cellSize)
+                          cell.y = Qt.binding(() => row * cellSize)
+                          cell.width = Qt.binding(() => cellSize)
+                          cell.height = Qt.binding(() => cellSize)
+                      });
+    }
 
-                                                      })
-                cellsArray.push(cell)
-                index++
-            }
-        }
+    function coordinatesToIndex(row, col){
+        return row * cols + col
+    }
+
+    function neighborsMinesCount(index){
+        let mines = 0
+        let row = Math.floor(index / cols)
+        let col = index % cols
+        mines += (row + 1 < rows && cells[coordinatesToIndex(row + 1, col)].hasMine)
+        mines += (row - 1 >= 0 && cells[coordinatesToIndex(row - 1, col)].hasMine)
+        mines += (col + 1 < cols && cells[coordinatesToIndex(row, col + 1)].hasMine)
+        mines += (col - 1 >= 0 && cells[coordinatesToIndex(row, col - 1)].hasMine)
+        mines += (row + 1 < rows && col + 1 < cols && cells[coordinatesToIndex(row + 1, col + 1)].hasMine)
+        mines += (row + 1 < rows && col - 1 >= 0 && cells[coordinatesToIndex(row + 1, col - 1)].hasMine)
+        mines += (row - 1 >= 0 && col + 1 < cols && cells[coordinatesToIndex(row - 1, col + 1)].hasMine)
+        mines += (row - 1 >= 0 && col - 1 >= 0 && cells[coordinatesToIndex(row - 1, col - 1)].hasMine)
+
+        return mines
     }
 
     Component.onCompleted: {
         createBoard(5, 5)
         console.log("Created")
     }
-
-    MouseArea{
-        anchors.fill: parent
-        acceptedButtons: Qt.LeftButton | Qt.RightButton
-        onClicked: function(mouse) {
-            let c = cellsArray[0]
-                    c.revealed = true
-
-                    // IMPORTANT: trigger model update
-                    cellsArray = cellsArray
-            //console.log("Clicked")
-        }
-    }
-
-    // resize dynamically if board size changes
-    // onWidthChanged: {updateCellSizes(); console.log("width changed!")}
-    // onHeightChanged: updateCellSizes()
-
-    // function updateCellSizes() {
-    //     for (let i = 0; i < cellsArray.length; i++) {
-    //         let r = Math.floor(i / cols)
-    //         let c = i % cols
-    //         let cell = cellsArray[i]
-    //         cell.width = cellSize
-    //         cell.height = cellSize
-    //         cell.x = c * cellSize
-    //         cell.y = r * cellSize
-    //     }
-    // }
 }
