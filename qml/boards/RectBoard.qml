@@ -15,6 +15,15 @@ Item{
     readonly property real minCellSize: 20
     property real cellSize: Math.max(minCellSize, Math.min(maxCellSize, Math.min(rawCellWidth, rawCellHeight)))
     property real fieldStartX: (width - cellSize*cols) / 2
+    property int gameState: RectBoard.GameState.InProgress
+
+    property int _revealedCells: 0
+
+    enum GameState{
+        InProgress,
+        Win,
+        Loss
+    }
 
     Component {
         id: cellComponent
@@ -31,20 +40,41 @@ Item{
     }
 
     function cellClicked(cellIndex, button){
-        if (cellIndex < 0 || cellIndex >= cells.length){
-            console.error("Incorret cellId clicked: " + cellIndex)
+        if (gameState !== RectBoard.GameState.InProgress) {
             return
         }
 
-        console.error("CellId clicked: " + cellIndex)
-        revealCell(cellIndex)
+        if (cellIndex < 0 || cellIndex >= cells.length){
+            console.error("Incorrect cellId clicked: " + cellIndex)
+            return
+        }
+
+        if (button === Qt.LeftButton) {
+            revealCell(cellIndex)
+            if (cells[cellIndex].hasMine){
+                finishGame(RectBoard.GameState.Loss)
+            } else if (_revealedCells === cells.length - mines){
+                finishGame(RectBoard.GameState.Win)
+            }
+        } else if (button === Qt.RightButton) {
+            cells[cellIndex].hasFlag = !cells[cellIndex].hasFlag
+        }
     }
 
-    // function openCell(index){
-    //     if (index >= 0 && index < cells.length) {
-    //         cells[cellIndex].revealed = true
-    //     }
-    // }
+    function finishGame(newGameState) {
+        if (newGameState === RectBoard.GameState.Loss || newGameState === RectBoard.GameState.Win){
+            gameState = newGameState
+        } else {
+            return
+        }
+
+        cells.forEach((cell)=>{
+                          revealCell(cell.index);
+                          if (cell.hasMine && !cell.hasFlag && gameState === RectBoard.GameState.Win){
+                              cell.hasFlag = true
+                          }
+                      })
+    }
 
     function revealCell(index){
         if (index < 0 && index >= cells.length) {
@@ -56,6 +86,7 @@ Item{
         }
 
         cells[index].revealed = true
+        ++_revealedCells
         if (cells[index].hasMine || cells[index].hasFlag){
             return
         }
@@ -73,7 +104,7 @@ Item{
                     revealCell(coordinatesToIndex(row - 1, col))
                 }
                 if(col + 1 < cols){
-                revealCell(coordinatesToIndex(row, col + 1))
+                    revealCell(coordinatesToIndex(row, col + 1))
                 }
                 if(col - 1 >= 0){
                     revealCell(coordinatesToIndex(row, col - 1))

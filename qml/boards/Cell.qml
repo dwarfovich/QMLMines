@@ -10,12 +10,28 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        color: revealed ? "#ECECEC" : "#C6C6C6"
-        border.width: 0.5
+        // border.width: 0.5
         MouseArea{
             anchors.fill: parent
             acceptedButtons: Qt.LeftButton | Qt.RightButton
             onClicked: (mouse)=>{ rectBoard.cellClicked(cell.index, mouse.button) }
+        }
+
+        Image {
+            property int spriteIndex: cell.spriteIndex()
+            property int spriteSize: 64
+            property int columns: 6
+
+            width: spriteSize
+            height: spriteSize
+            anchors.fill: parent
+            source: "../../assets/cells_square.png"
+            sourceClipRect: Qt.rect(
+                                (spriteIndex % columns) * spriteSize,
+                                Math.floor(spriteIndex / columns) * spriteSize,
+                                spriteSize,
+                                spriteSize
+                                )
         }
         Text{
             id: neighborsMinesLabel
@@ -25,12 +41,28 @@ Item {
         }
     }
 
+    function spriteIndex() {
+        if (!revealed){
+            return hasFlag ? 1 : 0
+        }
+
+        // Revealed cells
+        if (hasMine) {
+            return hasFlag ? 2 : 4
+        }
+
+        if (!hasMine && hasFlag) {
+            return 3
+        }
+
+        return 5
+    }
+
     function neighborMines() {
         return _neighborMines
     }
 
     function setNeighborMines(mines) {
-        console.log(width + " " + height)
         _neighborMines = mines
         if(mines > 0){
             neighborsMinesLabel.text = mines
