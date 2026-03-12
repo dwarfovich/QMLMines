@@ -16,7 +16,7 @@ Item{
     property real cellSize: Math.max(minCellSize, Math.min(maxCellSize, Math.min(rawCellWidth, rawCellHeight)))
     property real fieldStartX: (width - cellSize*cols) / 2
     property int gameState: RectBoard.GameState.InProgress
-
+    property bool firstCellRevealed: false
     property int _revealedCells: 0
 
     enum GameState{
@@ -50,15 +50,77 @@ Item{
         }
 
         if (button === Qt.LeftButton) {
-            revealCell(cellIndex)
-            if (cells[cellIndex].hasMine){
-                finishGame(RectBoard.GameState.Loss)
-            } else if (_revealedCells === cells.length - mines){
-                finishGame(RectBoard.GameState.Win)
+            let newGameState = onLeftClick(cellIndex)
+            if (newGameState !== RectBoard.GameState.InProgress){
+                finishGame(newGameState)
             }
-        } else if (button === Qt.RightButton) {
+        } else if (button === Qt.RightButton && !cells[cellIndex].revealed) {
             cells[cellIndex].hasFlag = !cells[cellIndex].hasFlag
         }
+    }
+
+    function onLeftClick(cellIndex) {
+        if (cells[cellIndex].revealed || cells[cellIndex].hasFlag) {
+            return RectBoard.GameState.InProgress
+        }
+
+        if (!firstCellRevealed){
+            if (cells[cellIndex].hasMine){
+                moveFirstMine(cellIndex)
+            }
+            firstCellRevealed = true
+        }
+
+        revealCell(cellIndex)
+        if(cells[cellIndex].hasMine){
+            return RectBoard.GameState.Loss
+        } else if (_revealedCells === cells.length - mines){
+            return RectBoard.GameState.Win
+        }
+        return RectBoard.GameState.InProgress
+    }
+
+    function moveMineToClosedCell(indexFrom, indexTo){
+        if(indexFrom < 0 || indexFrom >= cells.length) {
+            return false
+        }
+        if(indexTo < 0 || indexTo >= cells.length) {
+            return false
+        }
+        if(indexFrom === indexTo){
+            return false
+        }
+        if(!cells[indexFrom].hasMine || cells[indexTo].hasMine){
+            return false
+        }
+        if(cells[indexFrom].revealed || cells[indexTo].revealed){
+            return false
+        }
+
+        cells[indexFrom].hasMine = false
+        cells[indexTo].hasMine = true
+        return true
+    }
+
+    function moveFirstMine(cellIndex) {
+        let emptyCellIndex = Math.floor(Math.random() * cells.length);
+        let leftIndex = emptyCellIndex + 1
+        let rightIndex = emptyCellIndex
+        do {
+            if(leftIndex > 0) {
+                --leftIndex
+                if(leftIndex !== cellIndex && moveMineToClosedCell(cellIndex, leftIndex)) {
+                    return true
+                }
+            }
+            if(rightIndex < cells.length - 1){
+                ++rightIndex
+                if(rightIndex !== cellIndex && moveMineToClosedCell(cellIndex, rightIndex)){
+                    return true
+                }
+            }
+        } while(leftIndex > 0 || rightIndex < cells.length - 1)
+        return false
     }
 
     function finishGame(newGameState) {
@@ -121,7 +183,6 @@ Item{
                 if(row - 1 >= 0 && col - 1 >= 0){
                     revealCell(coordinatesToIndex(row - 1, col - 1))
                 }
-
             }
         }
     }
