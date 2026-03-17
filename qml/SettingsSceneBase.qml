@@ -1,9 +1,7 @@
 import QtQuick
 import Felgo
 
-Scene {
-    id: scene
-
+Item {
     opacity: 0
        // we set the visible property to false if opacity is 0 because the renderer skips invisible items, this is an performance improvement
     visible: opacity > 0

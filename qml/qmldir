@@ -1,0 +1,2 @@
+module BoardRegistry
+singleton BoardRegistry 1.0 BoardRegistry.qml

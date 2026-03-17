@@ -1,15 +1,14 @@
 import QtQuick
 import Felgo 4.0
-import ".."
 
-Item {
+Item{
     id: rectBoard
 
-    readonly property string name: "Rectangle"
+    readonly property string name: "Rectangle2"
     property var cells: []
-    property int mines: 6
-    property int rows: 5
-    property int cols: 5
+    property int mines: 4
+    property int rows: 4
+    property int cols: 4
     property real rawCellWidth: width / cols
     property real rawCellHeight: height / rows
     readonly property real maxCellSize: 60
@@ -25,13 +24,6 @@ Item {
         Win,
         Loss
     }
-
-    Component {
-            id: rectBoardComponent
-            Item {
-                property string name: "Rectangle"
-            }
-        }
 
     Component {
         id: cellComponent
@@ -241,10 +233,7 @@ Item {
     }
 
     Component.onCompleted: {
-        //createBoard(5, 5)
+        //createBoard(4, 4)
         //console.log("Created")
-        console.log("Registering Rect board")
-        BoardRegistry.registerBoard("Rectangle", rectBoardComponent)
-
     }
 }

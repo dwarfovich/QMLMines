@@ -4,6 +4,8 @@ import Felgo 4.0
 Item {
     id: selectGameItem
 
+    property string selectedBoard: ""
+
     signal backButtonClicked
 
     Rectangle {
@@ -24,13 +26,16 @@ Item {
             anchors.top: parent.top
             anchors.topMargin: selectGameItemFrame.padding
             anchors.horizontalCenter: parent.horizontalCenter
+            onClicked:{
+                selectedBoard = "rect"
+            }
         }
 
         MainMenuButton {
             id: backButton
             text: "Back"
-            anchors.left: parent.left
-            anchors.top: parent.top
+            anchors.left: rectButton.left
+            anchors.top: rectButton.bottom
             anchors.topMargin: selectGameItemFrame.padding
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: backButtonClicked()
