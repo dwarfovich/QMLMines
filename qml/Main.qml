@@ -94,14 +94,16 @@ GameWindow {
                     anchors.fill: parent
                 }
         Component.onCompleted: {
-            //Loader { source: "boards/RectBoard.qml" }
-            console.log("Main window: Component.onCompleted")
-            boardLoader.source = "boards/RectBoard.qml"
-            const fs = require("fs")
-
-            const files = fs.readdirSync("./qml/boards")
-                .filter(f => /^[a-zA-Z]*Board\.qml$/.test(f))
-console.log(files)
+            console.log("Type:", typeof BoardScanner)
+            BoardScanner.search("./qml/boards/")
+            console.log(BoardScanner.files)
+            // BoardScanner.search("./")
+            // for (let file of BoardScanner.files) {
+            //         console.log(file)
+            //     }
+            // //Loader { source: "boards/RectBoard.qml" }
+            // console.log("Main window: Component.onCompleted")
+            // boardLoader.source = "boards/RectBoard.qml"
         }
     }
 }

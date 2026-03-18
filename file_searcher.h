@@ -11,15 +11,13 @@ class FileSearcher : public QObject
 public:
     explicit FileSearcher(QObject *parent = nullptr);
 
-    const QStringList& files() const { return m_files; }
+    const QStringList& files() const;
 
 signals:
     void filesChanged();
 
-    private:
-    void search()
-    {
-    }
+    public slots:
+    void search(const QString& folderPath);
 
 private:
     QStringList m_files;

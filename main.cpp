@@ -1,10 +1,12 @@
+#include "file_searcher.h"
+
 #include <QApplication>
 #include <FelgoApplication>
-
+#include <QQmlContext>
 #include <QQmlApplicationEngine>
 
 // Uncomment this line to add Felgo Hot Reload and use hot reloading with your custom C++ code
-// #include <FelgoHotReload>
+#include <FelgoHotReload>
 
 int main(int argc, char *argv[])
 {
@@ -15,16 +17,24 @@ int main(int argc, char *argv[])
     // Use Felgo's default font instead of platform-specific fonts
     felgo.setPreservePlatformFonts(false);
 
+
     QQmlApplicationEngine engine;
+
+    FileSearcher fileSearcher;
+    engine.rootContext()->setContextProperty("BoardScanner", &fileSearcher);
+
     felgo.initialize(&engine);
 
     // Set an optional license key from project file
     // This does not work if using Felgo Developer App, only for Felgo Cloud Builds and local builds
     felgo.setLicenseKey(PRODUCT_LICENSE_KEY);
 
+
     // use this during development
     // for PUBLISHING, use the entry point below
     felgo.setMainQmlFileName(QStringLiteral("qml/Main.qml"));
+
+
 
     // use this instead of the above call to avoid deployment of the qml files and compile them into the binary with
     // qt's resource system qrc this is the preferred deployment option for publishing apps to the app stores, because
@@ -36,7 +46,7 @@ int main(int argc, char *argv[])
 
     // to start your project with Felgo Hot Reload, comment (remove) the lines "felgo.setMainQmlFileName ..." &
     // "engine.load ...", and uncomment the line below
-    // FelgoHotReload felgoHotReload(&engine);
+    //FelgoHotReload felgoHotReload(&engine);
 
     return app.exec();
 }
