@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
 
     // use this during development
     // for PUBLISHING, use the entry point below
-    felgo.setMainQmlFileName(QStringLiteral("qml/Main.qml"));
+    //felgo.setMainQmlFileName(QStringLiteral("qml/Main.qml"));
 
 
 
@@ -42,11 +42,11 @@ int main(int argc, char *argv[])
     // deploy_resources command in the CMakeLists file also see the CMakeLists.txt file for more details
     // felgo.setMainQmlFileName(QStringLiteral("qrc:/qml/Main.qml"));
 
-    engine.load(QUrl(felgo.mainQmlFileName()));
+    //engine.load(QUrl(felgo.mainQmlFileName()));
 
     // to start your project with Felgo Hot Reload, comment (remove) the lines "felgo.setMainQmlFileName ..." &
     // "engine.load ...", and uncomment the line below
-    //FelgoHotReload felgoHotReload(&engine);
+    FelgoHotReload felgoHotReload(&engine);
 
     return app.exec();
 }

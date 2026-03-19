@@ -1,8 +1,9 @@
 import QtQuick
 import Felgo 4.0
+import ".."
 
 Item{
-    id: rectBoard
+    id: rect2Board
 
     readonly property string name: "Rectangle2"
     property var cells: []
@@ -233,7 +234,10 @@ Item{
     }
 
     Component.onCompleted: {
-        //createBoard(4, 4)
+        //createBoard(5, 5)
         //console.log("Created")
+        console.log("Registering Rect board 2")
+        BoardRegistry.registerBoard("Rectangle2", rectBoardComponent)
+
     }
 }

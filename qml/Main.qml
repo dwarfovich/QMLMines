@@ -94,9 +94,12 @@ GameWindow {
                     anchors.fill: parent
                 }
         Component.onCompleted: {
-            console.log("Type:", typeof BoardScanner)
             BoardScanner.search("./qml/boards/")
-            console.log(BoardScanner.files)
+            for (let boardFile of BoardScanner.files) {
+                boardLoader.source = "./boards/"+ boardFile
+                console.log("loading " + boardFile)
+            }
+
             // BoardScanner.search("./")
             // for (let file of BoardScanner.files) {
             //         console.log(file)

@@ -76,5 +76,5 @@ target_link_libraries(QMLMines PRIVATE Qt6::Core)
 
 # uncomment this line to add Felgo Hot Reload and use hot reloading with your custom C++ code
 # for the remaining steps see here: https://felgo.com/custom-code-reload-app/
-# find_package(FelgoHotReload REQUIRED)
-# target_link_libraries(QMLMines PRIVATE FelgoHotReload)
+find_package(FelgoHotReload REQUIRED)
+target_link_libraries(QMLMines PRIVATE FelgoHotReload)
