@@ -12,33 +12,33 @@ Item {
         id: selectGameItemFrame
         anchors.horizontalCenter: parent.horizontalCenter
         color: "transparent"
-        border.color: "red"
+        border.color: "green"
         border.width: 2
         radius: 4
         width: 150
         height: 100
 
-        MainMenuButton {
-            id: rectButton
-            text: "Rect"
+        Column {
+            id: buttonsColumn
+            anchors.fill: parent
+            spacing: 10
 
-            anchors.left: parent.left
-            anchors.top: parent.top
-            anchors.topMargin: selectGameItemFrame.padding
-            anchors.horizontalCenter: parent.horizontalCenter
-            onClicked:{
-                selectedBoard = "rect"
+            Repeater {
+                model: [{name:"hello", value: 4}, {name:"bye", value: 8}]
+                delegate: MainMenuButton {
+                    text: modelData.name   // model, not modelData
+                    width: parent.width
+                    onClicked: {
+                        selectGameItem.selectedBoard = modelData.name
+                        console.log("Selected board:", modelData.name)
+                    }
+                }
             }
-        }
 
-        MainMenuButton {
-            id: backButton
-            text: "Back"
-            anchors.left: rectButton.left
-            anchors.top: rectButton.bottom
-            anchors.topMargin: selectGameItemFrame.padding
-            anchors.horizontalCenter: parent.horizontalCenter
-            onClicked: backButtonClicked()
+            MainMenuButton {
+                text: "Back"
+                onClicked: selectGameItem.backButtonClicked()
+            }
         }
     }
 }

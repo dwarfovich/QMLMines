@@ -27,6 +27,13 @@ Item{
     }
 
     Component {
+            id: rectBoardComponent
+            Item {
+                property string name: "Rectangle"
+            }
+        }
+
+    Component {
         id: cellComponent
         Cell {}
     }
